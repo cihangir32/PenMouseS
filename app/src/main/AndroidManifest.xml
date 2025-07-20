@@ -13,6 +13,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.PenMouseS">
+
         <activity
             android:name=".ui.main.MainActivity"
             android:exported="true"
@@ -22,14 +23,17 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
 
+        <activity
+            android:name=".shortcuts.StartMouseShortcutActivity" android:exported="true"
+            android:label="Toggle Mouse Proxy" android:icon="@mipmap/ic_launcher_round" android:theme="@android:style/Theme.NoDisplay"> </activity>
+
         <receiver
-            android:name=".shortcuts.ToggleMouseReceiver"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="pl.jojczak.penmouses.action.TOGGLE_MOUSE_SERVICE" />
-            </intent-filter>
+            android:name=".shortcuts.ToggleMouseReceiver" android:exported="true"> <intent-filter>
+            <action android:name="pl.jojczak.penmouses.action.TOGGLE_MOUSE_SERVICE" />
+        </intent-filter>
         </receiver>
 
         <service

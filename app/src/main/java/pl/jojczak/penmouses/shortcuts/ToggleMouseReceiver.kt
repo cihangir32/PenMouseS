@@ -4,39 +4,47 @@ import android.accessibilityservice.AccessibilityServiceInfo
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.view.accessibility.AccessibilityManager
 import pl.jojczak.penmouses.service.AppToServiceEvent
 import pl.jojczak.penmouses.service.MouseService // Import MouseService
 
-// Define a unique action string for your custom broadcast
 const val ACTION_TOGGLE_MOUSE_SERVICE = "pl.jojczak.penmouses.action.TOGGLE_MOUSE_SERVICE"
 
 class ToggleMouseReceiver : BroadcastReceiver() {
 
-    override fun onReceive(context: Context, intent: Intent) {
-        // Ensure this broadcast is for our intended action
-        if (intent.action == ACTION_TOGGLE_MOUSE_SERVICE) {
-            // Get the current status of the MouseService
-            val isMouseServiceActive = isAccessibilityServiceEnabled(
-                context, // Use the context provided to onReceive
-                MouseService::class.java.name // Get the fully qualified name of the service
-            )
+    companion object {
+        private const val TAG = "ToggleReceiver"
+    }
 
-            // Toggle the service based on its current state
-            if (isMouseServiceActive) {
-                // If it's active, send the STOP event
+    override fun onReceive(context: Context, intent: Intent) {
+        Log.d(TAG, "onReceive: Broadcast received. Action: ${intent.action}")
+
+        if (intent.action == ACTION_TOGGLE_MOUSE_SERVICE) {
+            Log.d(TAG, "Action matches $ACTION_TOGGLE_MOUSE_SERVICE. Proceeding with toggle logic.")
+
+            // NOW WE CHECK THE INTERNAL RUNNING STATE OF THE MOUSE SERVICE
+            val isMouseServiceInternallyRunning = MouseService.isServiceInternallyRunning
+            Log.d(TAG, "MouseService current INTERNAL status: $isMouseServiceInternallyRunning")
+
+            if (isMouseServiceInternallyRunning) {
+                Log.d(TAG, "Service is internally active. Attempting to send STOP event.")
                 AppToServiceEvent.event.tryEmit(AppToServiceEvent.Event.Stop)
             } else {
-                // If it's not active, send the START event
+                Log.d(TAG, "Service is NOT internally active. Attempting to send START event.")
                 AppToServiceEvent.event.tryEmit(AppToServiceEvent.Event.Start)
             }
+            Log.d(TAG, "Toggle logic completed.")
+        } else {
+            Log.d(TAG, "Received unexpected action: ${intent.action}")
         }
     }
 
-    /**
-     * Helper function to check if a specific Accessibility Service is enabled.
-     * This function is identical to the one in the previous activity, but needs to be here.
-     */
+    // You can remove the 'isAccessibilityServiceEnabled' helper function from here
+    // as we are no longer relying on the system's accessibility setting for toggling.
+    // However, if you want to keep it for initial checks or other purposes, you can.
+    // For a pure internal toggle, it's not strictly necessary.
+    /*
     private fun isAccessibilityServiceEnabled(context: Context, serviceClassName: String): Boolean {
         val accessibilityManager = context.getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
         val enabledServices = accessibilityManager.getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_ALL_MASK)
@@ -48,4 +56,5 @@ class ToggleMouseReceiver : BroadcastReceiver() {
         }
         return false
     }
+    */
 }
