@@ -25,7 +25,11 @@
             </intent-filter>
         </activity>
 
-        <service
+        <activity
+            android:name=".shortcut.StartMouseShortcutActivity"
+            android:exported="true"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+            <service
             android:name=".service.MouseService"
             android:exported="false"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
